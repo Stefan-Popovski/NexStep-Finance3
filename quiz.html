@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квизови - Nex$tep Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.birds.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="responsive.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .quiz-container {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .quiz-container.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        .vanta-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .quiz-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .feedback-message {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-profile {
+            display: none;
+        }
+        
+        .user-profile.show {
+            display: flex;
+        }
+        
+        /* Mobile Menu Button - Hidden on desktop */
+        .mobile-menu-btn {
+            display: none;
+        }
+        
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <span class="text-white font-bold text-xl">Nex$tep Finance</span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-white hover:text-pink-300 transition-colors duration-300">Почетна</a>
+                    <a href="courses.html" class="text-white hover:text-pink-300 transition-colors duration-300">Курсеви</a>
+                    <a href="quiz.html" class="text-pink-300 font-semibold">Квизови</a>
+                    <a href="about.html" class="text-white hover:text-pink-300 transition-colors duration-300">За нас</a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-btn md:hidden" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- Login/Register Buttons -->
+                <div id="auth-buttons" class="hidden md:flex items-center space-x-3">
+                    <button onclick="openRegisterModal()" class="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300">
+                        Регистрирај се
+                    </button>
+                    <button onclick="openLoginModal()" class="bg-gradient-to-r from-pink-400 to-red-400 text-white px-4 py-2 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Логин
+                    </button>
+                </div>
+                
+                <!-- User Profile -->
+                <div id="user-profile" class="user-profile items-center space-x-3">
+                    <span id="username" class="text-white font-semibold"></span>
+                    <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <button onclick="logout()" class="text-white/80 hover:text-white transition-colors duration-300">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu">
+                <a href="index.html" class="text-gray-800 hover:text-pink-600">Почетна</a>
+                <a href="courses.html" class="text-gray-800 hover:text-pink-600">Курсеви</a>
+                <a href="quiz.html" class="text-gray-800 hover:text-pink-600">Квизови</a>
+                <a href="about.html" class="text-gray-800 hover:text-pink-600">За нас</a>
+                <div class="p-4 border-t border-gray-200">
+                    <button onclick="openRegisterModal()" class="w-full mb-2 bg-white/20 text-gray-800 px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300">
+                        Регистрирај се
+                    </button>
+                    <button onclick="openLoginModal()" class="w-full bg-gradient-to-r from-pink-400 to-red-400 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300">
+                        Логин
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="relative pt-24 pb-12 overflow-hidden">
+        <div id="vanta-bg" class="vanta-canvas"></div>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h1 class="text-5xl md:text-6xl font-black text-white mb-6">Квизови</h1>
+            <p class="text-xl text-white/80 max-w-2xl mx-auto">
+                Тестирај го своето финансиско знаење и добивај поени и награди
+            </p>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-4">Финансиски квиз</h2>
+                    <p class="text-xl text-white/80">Тестирај го своето финансиско знаење</p>
+                </div>
+                
+                <!-- Quiz Container -->
+                <div id="quiz-container" class="bg-white/10 backdrop-blur-md rounded-2xl p-8">
+                    <!-- Progress Bar -->
+                    <div class="mb-8">
+                        <div class="flex justify-between text-white mb-2">
+                            <span>Прашање <span id="current-question">1</span> од <span id="total-questions">5</span></span>
+                            <span id="quiz-score">0 поени</span>
+                        </div>
+                        <div class="w-full bg-white/20 rounded-full h-2">
+                            <div id="progress-bar" class="progress-bar bg-gradient-to-r from-pink-400 to-red-400 h-2 rounded-full" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quiz Questions -->
+                    <div id="question-1" class="quiz-container active">
+                        <h3 class="text-2xl font-bold text-white mb-6">Што е буџет?</h3>
+                        <div class="space-y-4">
+                            <button onclick="selectAnswer(1, 'a', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                а) План за трошење и заштеда на пари
+                            </button>
+                            <button onclick="selectAnswer(1, 'b', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                б) Сметка во банка
+                            </button>
+                            <button onclick="selectAnswer(1, 'c', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                в) Кредит од банка
+                            </button>
+                        </div>
+                        <div id="feedback-1" class="feedback-message mt-4 hidden"></div>
+                    </div>
+                    
+                    <div id="question-2" class="quiz-container">
+                        <h3 class="text-2xl font-bold text-white mb-6">Колку треба да заштедуваш од месечниот приход?</h3>
+                        <div class="space-y-4">
+                            <button onclick="selectAnswer(2, 'a', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                а) Се што остане на крајот од месецот
+                            </button>
+                            <button onclick="selectAnswer(2, 'b', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                б) Најмалку 10-20%
+                            </button>
+                            <button onclick="selectAnswer(2, 'c', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                в) Ништо, треба да се троши се
+                            </button>
+                        </div>
+                        <div id="feedback-2" class="feedback-message mt-4 hidden"></div>
+                    </div>
+                    
+                    <div id="question-3" class="quiz-container">
+                        <h3 class="text-2xl font-bold text-white mb-6">Што е каматна стапка?</h3>
+                        <div class="space-y-4">
+                            <button onclick="selectAnswer(3, 'a', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                а) Фиксна цена на производ
+                            </button>
+                            <button onclick="selectAnswer(3, 'b', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                б) Процент што го плаќаш за позајмени пари
+                            </button>
+                            <button onclick="selectAnswer(3, 'c', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                в) Данок на приход
+                            </button>
+                        </div>
+                        <div id="feedback-3" class="feedback-message mt-4 hidden"></div>
+                    </div>
+                    
+                    <div id="question-4" class="quiz-container">
+                        <h3 class="text-2xl font-bold text-white mb-6">Кој е најдобар начин за инвестирање?</h3>
+                        <div class="space-y-4">
+                            <button onclick="selectAnswer(4, 'a', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                а) Сите пари во една инвестиција
+                            </button>
+                            <button onclick="selectAnswer(4, 'b', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                б) Диверзификација - распределба на ризикот
+                            </button>
+                            <button onclick="selectAnswer(4, 'c', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                в) Чување пари дома
+                            </button>
+                        </div>
+                        <div id="feedback-4" class="feedback-message mt-4 hidden"></div>
+                    </div>
+                    
+                    <div id="question-5" class="quiz-container">
+                        <h3 class="text-2xl font-bold text-white mb-6">Што е кредитен рејтинг?</h3>
+                        <div class="space-y-4">
+                            <button onclick="selectAnswer(5, 'a', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                а) Број на кредитни картички
+                            </button>
+                            <button onclick="selectAnswer(5, 'b', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                б) Оцена за твоја способност да враќаш долгови
+                            </button>
+                            <button onclick="selectAnswer(5, 'c', this)" class="quiz-option w-full text-left p-4 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300">
+                                в) Износ на заштеда
+                            </button>
+                        </div>
+                        <div id="feedback-5" class="feedback-message mt-4 hidden"></div>
+                    </div>
+                    
+                    <!-- Quiz Navigation -->
+                    <div class="flex justify-between mt-8">
+                        <button id="prev-btn" onclick="previousQuestion()" class="bg-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Претходно
+                        </button>
+                        <button id="next-btn" onclick="nextQuestion()" class="bg-gradient-to-r from-pink-400 to-red-400 text-white px-6 py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                            Следно
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Quiz Results -->
+                    <div id="quiz-results" class="hidden text-center">
+                        <div class="bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl p-8">
+                            <h3 class="text-3xl font-bold text-white mb-4">Браво!</h3>
+                            <p class="text-xl text-white mb-4">Ти освои <span id="final-score">0</span> од 5 поени</p>
+                            <div id="score-message" class="text-white mb-6"></div>
+                            <div id="score-feedback" class="text-white mb-6"></div>
+                            <button onclick="restartQuiz()" class="bg-white text-gray-800 px-8 py-3 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                                Играј повторно
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Quizzes -->
+    <section class="py-20 bg-white/5">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white mb-6">Дополнителни квизови</h2>
+                <p class="text-xl text-white/80 max-w-2xl mx-auto">
+                    Продолжи со учење преку специјализирани квизови за различни теми
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="glass-card rounded-2xl p-8 text-center slide-in">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-piggy-bank text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Квиз: Заштеда</h3>
+                    <p class="text-white/80 mb-6">
+                        Тестирај го знаењето за основите на заштеда и буџетирање.
+                    </p>
+                    <button onclick="startSpecializedQuiz('savings')" class="bg-gradient-to-r from-green-400 to-blue-500 text-white px-6 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Започни квиз
+                    </button>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-8 text-center slide-in" style="animation-delay: 0.1s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Квиз: Инвестирање</h3>
+                    <p class="text-white/80 mb-6">
+                        Провери колку знаеш за различните видови инвестиции.
+                    </p>
+                    <button onclick="startSpecializedQuiz('investing')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-6 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Започни квиз
+                    </button>
+                </div>
+                
+                <div class="glass-card rounded-2xl p-8 text-center slide-in" style="animation-delay: 0.2s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-credit-card text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Квиз: Кредити</h3>
+                    <p class="text-white/80 mb-6">
+                        Научи се за кредитите и одговорното позајмување.
+                    </p>
+                    <button onclick="startSpecializedQuiz('credits')" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Започни квиз
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black/20 backdrop-blur-md py-8">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <span class="text-white font-bold text-xl">Nex$tep</span>
+                    <span class="text-white font-bold text-xl">Finance</span>
+                </div>
+                <p class="text-white/60 mb-4">© 2024 Nex$tep Finance. Сите права задржани.</p>
+                <p class="text-white/60 text-sm">Направено со <i class="fas fa-heart text-pink-400"></i> од млади за млади</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">Логин</h3>
+                    <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                        <input type="email" id="login-email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent" placeholder="Внеси email"/>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Лозинка</label>
+                        <input type="password" id="login-password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent" placeholder="Внеси лозинка"/>
+                    </div>
+                    
+                    <button onclick="login()" class="w-full bg-gradient-to-r from-pink-400 to-red-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Најави се
+                    </button>
+                    
+                    <div class="text-center">
+                        <p class="text-gray-600 text-sm">Немаш профил? <a href="#" onclick="closeLoginModal(); openRegisterModal();" class="text-pink-500 hover:underline">Регистрирај се</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">Регистрација</h3>
+                    <button onclick="closeRegisterModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Име</label>
+                        <input type="text" id="register-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent" placeholder="Внеси име"/>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                        <input type="email" id="register-email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent" placeholder="Внеси email"/>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Лозинка</label>
+                        <input type="password" id="register-password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-transparent" placeholder="Внеси лозинка"/>
+                    </div>
+                    
+                    <button onclick="register()" class="w-full bg-gradient-to-r from-pink-400 to-red-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                        Регистрирај се
+                    </button>
+                    
+                    <div class="text-center">
+                        <p class="text-gray-600 text-sm">Веќе имаш профил? <a href="#" onclick="closeRegisterModal(); openLoginModal();" class="text-pink-500 hover:underline">Логин</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="session.js"></script>
+    <script>
+        // Initialize Vanta.js background
+        VANTA.BIRDS({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            backgroundColor: 0x1a1a2e,
+            color1: 0x667eea,
+            color2: 0x764ba2,
+            birdSize: 1.20,
+            wingSpan: 25.00,
+            speedLimit: 3.00,
+            separation: 30.00,
+            alignment: 30.00,
+            cohesion: 30.00,
+            quantity: 3.00
+        });
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        // Quiz functionality
+        let currentQuestion = 1;
+        let totalQuestions = 5;
+        let score = 0;
+        let answers = {};
+        let correctAnswers = {
+            1: 'a',  // Што е буџет? - а) План за трошење и заштеда на пари
+            2: 'b',  // Колку треба да заштедуваш? - б) Најмалку 10-20%
+            3: 'b',  // Што е каматна стапка? - б) Процент што го плаќаш за позајмени пари
+            4: 'b',  // Најдобар начин за инвестирање? - б) Диверзификација
+            5: 'b'   // Што е кредитен рејтинг? - б) Оцена за способност да враќаш долгови
+        };
+        let answeredQuestions = {};
+        let currentScore = 0;
+
+        // User data
+        let currentUser = null;
+
+        function selectAnswer(question, answer, element) {
+            // Check if question is already answered
+            if (answeredQuestions[question]) {
+                return;
+            }
+            
+            // Mark question as answered
+            answeredQuestions[question] = true;
+            
+            // Remove hover effects and disable all options for this question
+            document.querySelectorAll(`#question-${question} .quiz-option`).forEach(opt => {
+                opt.classList.remove('hover:bg-white/20');
+                opt.classList.add('disabled');
+                opt.onclick = null;
+            });
+            
+            // Mark selected answer
+            answers[question] = answer;
+            element.classList.remove('bg-white/10');
+            
+            // Show immediate feedback
+            const feedback = document.getElementById(`feedback-${question}`);
+            feedback.classList.remove('hidden');
+            
+            if (answer === correctAnswers[question]) {
+                element.classList.add('bg-green-500');
+                feedback.innerHTML = '<div class="bg-green-500/20 text-green-200 p-3 rounded-lg"><i class="fas fa-check-circle mr-2"></i>Точно! Одлично одговорено!</div>';
+                currentScore++;
+                updateScoreDisplay();
+            } else {
+                element.classList.add('bg-red-500');
+                feedback.innerHTML = '<div class="bg-red-500/20 text-red-200 p-3 rounded-lg"><i class="fas fa-times-circle mr-2"></i>Погрешно. Продолжи да учиш!</div>';
+                // Show correct answer
+                const correctOptionIndex = correctAnswers[question].charCodeAt(0) - 97; // Convert 'a'=0, 'b'=1, 'c'=2
+                const correctOption = document.querySelectorAll(`#question-${question} .quiz-option`)[correctOptionIndex];
+                correctOption.classList.add('bg-green-500');
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('quiz-score').textContent = `${currentScore} поени`;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+                currentQuestion++;
+                document.getElementById(`question-${currentQuestion}`).classList.add('active');
+                
+                // Update progress
+                document.getElementById('current-question').textContent = currentQuestion;
+                document.getElementById('progress-bar').style.width = (currentQuestion / totalQuestions * 100) + '%';
+                
+                // Update buttons
+                document.getElementById('prev-btn').disabled = false;
+                if (currentQuestion === totalQuestions) {
+                    document.getElementById('next-btn').innerHTML = 'Заврши квиз <i class="fas fa-check ml-2"></i>';
+                    document.getElementById('next-btn').onclick = finishQuiz;
+                }
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+                currentQuestion--;
+                document.getElementById(`question-${currentQuestion}`).classList.add('active');
+                
+                // Update progress
+                document.getElementById('current-question').textContent = currentQuestion;
+                document.getElementById('progress-bar').style.width = (currentQuestion / totalQuestions * 100) + '%';
+                
+                // Update buttons
+                if (currentQuestion === 1) {
+                    document.getElementById('prev-btn').disabled = true;
+                }
+                document.getElementById('next-btn').innerHTML = 'Следно <i class="fas fa-arrow-right ml-2"></i>';
+                document.getElementById('next-btn').onclick = nextQuestion;
+            }
+        }
+
+        function finishQuiz() {
+            // Final score is already calculated in currentScore
+            score = currentScore;
+            
+            // Show results
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('final-score').textContent = score;
+            
+            // Show appropriate message based on score
+            let message = '';
+            let feedback = '';
+            
+            if (score === 5) {
+                message = '🎉 БРАВО! Ти си финансиски експерт!';
+                feedback = 'Совршено познавање на финансиските концепти! Ти заслужуваш златен беџ!';
+            } else if (score === 4) {
+                message = '👏 Одлично!';
+                feedback = 'Имаш многу добро финансиско знаење. Само уште малку и ќе бидеш експерт! Освои сребрен беџ.';
+            } else if (score === 3) {
+                message = '👍 Добро направено!';
+                feedback = 'Имаш солидно финансиско знаење, но има простор за подобрување. Бронзен беџ за тебе.';
+            } else if (score === 2) {
+                message = '📚 Потребно е уште учење!';
+                feedback = 'Продолжи да учиш за да ги совладаш основите. Препорачуваме да ги изгледаш нашите курсеви.';
+            } else if (score === 1) {
+                message = '📖 Потребно е повеќе учење!';
+                feedback = 'Започни со основните курсеви за да ги совладаш концептите. Не се откажувај!';
+            } else {
+                message = '❓ Неопходно е учење!';
+                feedback = 'Препорачуваме да ги изучиш основните курсеви пред квиз. Учењето е патот до успех!';
+            }
+            
+            document.getElementById('score-message').textContent = message;
+            document.getElementById('score-feedback').textContent = feedback;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 1;
+            score = 0;
+            currentScore = 0;
+            answers = {};
+            answeredQuestions = {};
+            
+            // Reset UI
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-container').style.display = 'block';
+            
+            // Reset questions
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById(`question-${i}`).classList.remove('active');
+                document.getElementById(`feedback-${i}`).classList.add('hidden');
+                document.querySelectorAll(`#question-${i} .quiz-option`).forEach(opt => {
+                    opt.classList.remove('bg-green-500', 'bg-red-500');
+                    opt.classList.add('bg-white/10');
+                    opt.classList.remove('disabled');
+                    opt.onclick = function() { selectAnswer(i, opt.getAttribute('onclick').match(/'([abc])'/)[1], this); };
+                });
+            }
+            document.getElementById('question-1').classList.add('active');
+            
+            // Reset progress
+            document.getElementById('current-question').textContent = '1';
+            document.getElementById('progress-bar').style.width = '20%';
+            updateScoreDisplay();
+            
+            // Reset buttons
+            document.getElementById('prev-btn').disabled = true;
+            document.getElementById('next-btn').innerHTML = 'Следно <i class="fas fa-arrow-right ml-2"></i>';
+            document.getElementById('next-btn').onclick = nextQuestion;
+        }
+
+        function startSpecializedQuiz(type) {
+            alert(`Квизот за ${type} ќе биде достапен наскоро! Продолжи со основниот квиз засега.`);
+        }
+
+        // Login and Registration functions
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function openRegisterModal() {
+            document.getElementById('register-modal').classList.remove('hidden');
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('register-modal').classList.add('hidden');
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (email && password) {
+                // Simulate successful login
+                currentUser = {
+                    email: email,
+                    name: email.split('@')[0]
+                };
+                
+                // Save session
+                saveUserSession(currentUser);
+                
+                // Update UI to show user profile
+                updateUIForLoggedInUser(currentUser);
+                
+                closeLoginModal();
+                alert('Успешна најава! Добредојде во Nex$tep Finance!');
+            } else {
+                alert('Ве молиме пополнете ги сите полиња!');
+            }
+        }
+
+        function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            if (name && email && password) {
+                // Simulate successful registration
+                currentUser = {
+                    email: email,
+                    name: name
+                };
+                
+                // Save session
+                saveUserSession(currentUser);
+                
+                // Update UI to show user profile
+                updateUIForLoggedInUser(currentUser);
+                
+                closeRegisterModal();
+                alert('Успешна регистрација! Добредојде во Nex$tep Finance!');
+            } else {
+                alert('Ве молиме пополнете ги сите полиња!');
+            }
+        }
+
+        function logout() {
+            clearUserSession();
+            document.getElementById('auth-buttons').style.display = 'flex';
+            document.getElementById('user-profile').classList.remove('show');
+            alert('Успешно одјавување!');
+        }
+    </script>
+
+</body>
+</html>
