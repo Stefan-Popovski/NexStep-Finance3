@@ -23,6 +23,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
+            width: 350px;
         }
         
         .glass-card:hover {
@@ -184,7 +185,7 @@
     <section class="relative pt-24 pb-20 overflow-hidden hero-section">
         <div id="vanta-bg" class="vanta-canvas"></div>
         <div class="container mx-auto px-4 text-center relative z-10">
-            <div class="max-w-4xl mx-auto">
+            <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-5xl md:text-7xl font-black hero-text mb-8">
                     Парите се<br/>
                     <span class="text-pink-400">предизвик</span>
@@ -194,36 +195,36 @@
                     <span class="text-pink-300">Од млади за млади</span> - без здодевни предавања, само забавно учење.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5 justify-center items-center mb-12">
-                    <a href="quiz.html" class="bg-gradient-to-r from-pink-400 to-red-400 text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 button">
+                    <a href="#" onclick="openRegisterModal()" class="bg-gradient-to-r from-pink-400 to-red-400 text-white -ml-1 md:-ml-4 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 button">
                         <i class="fas fa-play mr-2"></i>
-                        Започни квиз
+                        Започни бесплатно!
                     </a>
-                    <button onclick="openBudgetSimulator()" class="budget-simulator text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 button">
+                    <button onclick="openBudgetSimulator()"class="budget-simulator bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
                         <i class="fas fa-calculator mr-2"></i>
-                        Буџет симулатор
+                    Буџет симулатор
                     </button>
-                    <a href="sessions.html" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-user-tie mr-2"></i>
-                        Менторски сесии
-                    </a>
+                    
                 </div>
 
                 
                 <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-                    <div class="glass-card rounded-2xl p-6 text-center">
-                        <div class="text-4xl font-black stats-number mb-2" id="users-count">500+</div>
-                        <div class="text-white/80">Корисници</div>
-                    </div>
-                    <div class="glass-card rounded-2xl p-6 text-center">
-                        <div class="text-4xl font-black stats-number mb-2">12</div>
-                        <div class="text-white/80">Курсеви</div>
-                    </div>
-                    <div class="glass-card rounded-2xl p-6 text-center">
-                        <div class="text-4xl font-black stats-number mb-2">50+</div>
-                        <div class="text-white/80">Прашања</div>
-                    </div>
-                </div>
+               
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto justify-items-center">
+
+    <div class="glass-card rounded-2xl p-6 text-center">
+        <div class="text-4xl font-black stats-number mb-2">12</div>
+        <div class="text-white/80">Курсеви</div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-6 text-center">
+        <div class="text-4xl font-black stats-number mb-2">50+</div>
+        <div class="text-white/80">Прашања</div>
+    </div>
+
+</div>
+
+
+</div>
             </div>
         </div>
     </section>
