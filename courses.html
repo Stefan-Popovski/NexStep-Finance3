@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Курсеви - Nex$tep Finance</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.birds.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.birds.min.js "></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300 ;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css ">
     <link rel="stylesheet" href="responsive.css">
     <style>
         body {
@@ -96,6 +96,63 @@
                 display: block;
             }
         }
+        
+        /* Video Modal Styles */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .video-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-container {
+            width: 90%;
+            max-width: 800px;
+            height: 80%;
+            max-height: 600px;
+            background: #000;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .close-video {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1001;
+            background: rgba(0, 0, 0, 0.7);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-video:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .video-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -113,7 +170,7 @@
                     <a href="index.html" class="text-white hover:text-pink-300 transition-colors duration-300">Почетна</a>
                     <a href="courses.html" class="text-pink-300 font-semibold">Курсеви</a>
                     <a href="quiz.html" class="text-white hover:text-pink-300 transition-colors duration-300">Квизови</a>
-                    <a href="sessions.html" class="block px-1 py-2 text-purple-600 font-semibold">Менторски Сесии</a>
+                    <a href="sessions.html" class="text-white hover:text-pink-300 transition-colors duration-300">Менторски Сесии</a>
                     <a href="about.html" class="text-white hover:text-pink-300 transition-colors duration-300">За нас</a>
                 </div>
                 
@@ -453,6 +510,16 @@
         </div>
     </div>
 
+    <!-- Video Modal -->
+    <div id="video-modal" class="video-modal">
+        <div class="video-container">
+            <div class="close-video" onclick="closeVideoModal()">
+                <i class="fas fa-times"></i>
+            </div>
+            <iframe id="video-iframe" class="video-iframe" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
@@ -583,10 +650,10 @@
                         </div>
                         
                         <div class="text-center">
-                            <a href="https://youtube.com/shorts/PkJGiDmamQc?si=gdmDklu1pFnTDwwo" target="_blank" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
+                            <button onclick="openVideoModal('savings')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
                                 <i class="fas fa-vote-yea mr-2"></i>
                                     Започни го курсот!
-                            </a>
+                            </button>
                             <p class="text-white/70 mt-2 text-sm">Помогни ни да ја реализираме идејата!</p>
                         </div>
                     </div>
@@ -617,10 +684,10 @@
                         </div>
                         
                         <div class="text-center">
-                             <a href="https://youtube.com/shorts/PkJGiDmamQc?si=gdmDklu1pFnTDwwo" target="_blank" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
+                             <button onclick="openVideoModal('investing')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
                                 <i class="fas fa-vote-yea mr-2"></i>
                                 Започни го курсот!
-                            </a>
+                            </button>
                             <p class="text-white/70 mt-2 text-sm">Помогни ни да ја реализираме идејата!</p>
                         </div>
                     </div>
@@ -651,10 +718,10 @@
                         </div>
                         
                         <div class="text-center">
-                            <a href="https://youtube.com/shorts/PkJGiDmamQc?si=gdmDklu1pFnTDwwo" target="_blank" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
+                            <button onclick="openVideoModal('credits')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
                                 <i class="fas fa-vote-yea mr-2"></i>
                                     Започни го курсот!
-                            </a>
+                            </button>
                             <p class="text-white/70 mt-2 text-sm">Помогни ни да ја реализираме идејата!</p>
                         </div>
                     </div>
@@ -685,10 +752,10 @@
                         </div>
                         
                         <div class="text-center">
-                            <a href="https://youtube.com/shorts/PkJGiDmamQc?si=gdmDklu1pFnTDwwo" target="_blank" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
+                            <button onclick="openVideoModal('crypto')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
                                 <i class="fas fa-vote-yea mr-2"></i>
                                     Започни го курсот!
-                            </a>
+                            </button>
                             <p class="text-white/70 mt-2 text-sm">Помогни ни да ја реализираме идејата!</p>
                         </div>
                     </div>
@@ -719,10 +786,10 @@
                         </div>
                         
                         <div class="text-center">
-                            <a href="https://youtube.com/shorts/PkJGiDmamQc?si=gdmDklu1pFnTDwwo" target="_blank" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
+                            <button onclick="openVideoModal('taxes')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
                                 <i class="fas fa-vote-yea mr-2"></i>
                                     Започни го курсот!
-                            </a>
+                            </button>
                             <p class="text-white/70 mt-2 text-sm">Помогни ни да ја реализираме идејата!</p>
                         </div>
                     </div>
@@ -753,15 +820,62 @@
                         </div>
                         
                         <div class="text-center">
-                            <a href="https://youtube.com/shorts/PkJGiDmamQc?si=gdmDklu1pFnTDwwo" target="_blank" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
+                            <button onclick="openVideoModal('security')" class="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 inline-block">
                                 <i class="fas fa-vote-yea mr-2"></i>
                                     Започни го курсот!
-                            </a>
+                            </button>
                             <p class="text-white/70 mt-2 text-sm">Помогни ни да ја реализираме идејата!</p>
                         </div>
                     </div>
                 `
             }
+        };
+
+        // Video URLs for each course
+        const videoUrls = {
+            savings: [
+                "https://www.youtube.com/embed/dQw4w9WgXcQ", // Rick Astley - Never Gonna Give You Up
+                "https://www.youtube.com/embed/9bZkp7q19f0", // PSY - Gangnam Style
+                "https://www.youtube.com/embed/kXYiU_JCYtU", // Numb - Linkin Park
+                "https://www.youtube.com/embed/fJ9rUzIMcZQ", // Bohemian Rhapsody
+                "https://www.youtube.com/embed/lf_wVfwpfp8", // Imagine Dragons - Believer
+                "https://www.youtube.com/embed/JGwWNGJdvx8"  // Ed Sheeran - Shape of You
+            ],
+            investing: [
+                "https://www.youtube.com/embed/pXRviuL6vMY", // Queen - Don't Stop Me Now
+                "https://www.youtube.com/embed/fKopy74weus", // Imagine Dragons - Thunder
+                "https://www.youtube.com/embed/2Vv-BfVoq4g", // The Weeknd - Blinding Lights
+                "https://www.youtube.com/embed/hT_nvWreIhg", // Post Malone - Sunflower
+                "https://www.youtube.com/embed/RgKAFK5djSk", // Wiz Khalifa - See You Again
+                "https://www.youtube.com/embed/09R8_2nJtjg"  // Maroon 5 - Sugar
+            ],
+            credits: [
+                "https://www.youtube.com/embed/JGwWNGJdvx8", // Ed Sheeran - Shape of You
+                "https://www.youtube.com/embed/3JZ_D3ELwOQ", // Taylor Swift - Blank Space
+                "https://www.youtube.com/embed/kOkQ4T5WO9E", // Bruno Mars - Uptown Funk
+                "https://www.youtube.com/embed/6JCLY0Rlx6Q", // Mark Ronson - Uptown Funk ft. Bruno Mars
+                "https://www.youtube.com/embed/YykjpeuMNEk", // Justin Bieber - Sorry
+                "https://www.youtube.com/embed/LtQUJMBH8uE"  // OneRepublic - Counting Stars
+            ],
+            crypto: [
+                "https://www.youtube.com/embed/0MDFvdCnInE"
+            ],
+            taxes: [
+                "https://www.youtube.com/embed/5GL9JoH4Sos", // Adele - Hello
+                "https://www.youtube.com/embed/YqeW9_5kURI", // Sam Smith - Stay With Me
+                "https://www.youtube.com/embed/450p7goxZqg", // Coldplay - Adventure of a Lifetime
+                "https://www.youtube.com/embed/QtXby3TwHmm", // Katy Perry - Firework
+                "https://www.youtube.com/embed/WE8gcMBd7cY", // Pharrell Williams - Happy
+                "https://www.youtube.com/embed/0uLI6BnN6KY"  // Jason Mraz - I'm Yours
+            ],
+            security: [
+                "https://www.youtube.com/embed/4NRXx6U8ABQ", // Lady Gaga - Bad Romance
+                "https://www.youtube.com/embed/uelHwf8o7_U", // Pitbull - Timber ft. Ke$ha
+                "https://www.youtube.com/embed/SDTZ7iX4Wxc", // Shakira - Waka Waka
+                "https://www.youtube.com/embed/pRpeEdMmmQ0", // Shakira - Hips Don't Lie
+                "https://www.youtube.com/embed/1mM6d3Y_rSE", // Enrique Iglesias - Bailando
+                "https://www.youtube.com/embed/UVzPj3kcLro"  // Don Omar - Danza Kuduro
+            ]
         };
 
         // Course functions
@@ -778,6 +892,32 @@
             document.getElementById('course-modal').classList.add('hidden');
         }
         
+        // Video Modal Functions
+        function openVideoModal(courseType) {
+            const urls = videoUrls[courseType];
+            const randomUrl = urls[Math.floor(Math.random() * urls.length)];
+            
+            document.getElementById('video-iframe').src = randomUrl;
+            document.getElementById('video-modal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Close course modal if it's open
+            closeCourseModal();
+        }
+
+        function closeVideoModal() {
+            document.getElementById('video-modal').classList.remove('show');
+            document.getElementById('video-iframe').src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close video modal when clicking outside
+        document.getElementById('video-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeVideoModal();
+            }
+        });
+
         // Close modal when clicking outside
         document.addEventListener('click', function(event) {
             const modal = document.getElementById('course-modal');
