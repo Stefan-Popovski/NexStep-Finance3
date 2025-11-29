@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nex$tep Finance - Научи да управуваш со пари</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.birds.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.birds.min.js "></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300 ;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css ">
     <link rel="stylesheet" href="responsive.css">
     <style>
         body {
@@ -109,9 +109,23 @@
             display: none;
         }
         
+        /* Дополнителни стилови за мобилна централизација */
         @media (max-width: 768px) {
             .mobile-menu-btn {
                 display: block;
+            }
+            
+            .features-section .grid {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .glass-card {
+                width: 100%;
+                max-width: 350px;
+                margin: 0 auto;
             }
         }
     </style>
@@ -239,9 +253,9 @@
                 </p>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <div class="glass-card rounded-2xl p-8 text-center slide-in">
-                    <div class="feature-icon w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+                <div class="glass-card rounded-2xl p-8 text-center slide-in flex flex-col items-center">
+                    <div class="feature-icon w-20 h-20 rounded-full flex items-center justify-center mb-6">
                         <i class="fas fa-video text-white text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-4">Микро-лекции</h3>
@@ -253,8 +267,8 @@
                     </a>
                 </div>
                 
-                <div class="glass-card rounded-2xl p-8 text-center slide-in" style="animation-delay: 0.1s;">
-                    <div class="feature-icon w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div class="glass-card rounded-2xl p-8 text-center slide-in flex flex-col items-center" style="animation-delay: 0.1s;">
+                    <div class="feature-icon w-20 h-20 rounded-full flex items-center justify-center mb-6">
                         <i class="fas fa-trophy text-white text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-4">Квизови и предизвици</h3>
@@ -266,8 +280,8 @@
                     </a>
                 </div>
                 
-                <div class="glass-card rounded-2xl p-8 text-center slide-in" style="animation-delay: 0.2s;">
-                    <div class="feature-icon w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div class="glass-card rounded-2xl p-8 text-center slide-in flex flex-col items-center" style="animation-delay: 0.2s;">
+                    <div class="feature-icon w-20 h-20 rounded-full flex items-center justify-center mb-6">
                         <i class="fas fa-calculator text-white text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-4">Буџет симулатор</h3>
